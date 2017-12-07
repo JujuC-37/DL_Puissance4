@@ -1,9 +1,6 @@
 const $firstRow = $('.row:first-of-type');
 const $message = $('.message');
-
-const colorPlayer1 = 'blue';
-const colorPlayer2 = 'red';
-let currentPlayer = 'Joueur 1';
+let currentPlayer = 'blue';
 
 updateMessage();
 
@@ -11,16 +8,11 @@ updateMessage();
 $firstRow.on('click', '.cell', function (event) {
     const $cell = $(event.target);
   
-    const i = $cell.index() + 1;
+    const column = $cell.index() + 1;
+    let $cellToColorize = findEmptyCellInColumn(column);
 
-    if (currentPlayer === 'Joueur 1') {
-        addColorToCell(i,colorPlayer1);
-        currentPlayer = 'Joueur 2';
-    }
-    else {
-        addColorToCell(i,colorPlayer2);
-        currentPlayer = 'Joueur 1';
-    }
+    if($cellToColorize == null) return;
+    colorizeCell($cellToColorize, currentPlayer);
     updateMessage();
 });
 
@@ -29,14 +21,29 @@ function updateMessage() {
   $message.text(`Joueur actuel : ${currentPlayer}`)
 }
 
-function addColorToCell(numColumn, color) {
-    let emptyCase = false;
-    let i = 1;
-
-    while($(`.row:nth-last-of-type(${i}) > .cell:nth-of-type(${numColumn})`).is(`.${colorPlayer1}, .${colorPlayer2}`)) {
-        i++;
+function findEmptyCellInColumn(column) {
+    return $(`.row > .cell:nth-of-type(${column}):not(.blue):not(.red)`)
+        .last();
+    /*
+    for(let row = 1; row <= 6; row++) {
+        let $cell = $(`.row:nth-last-of-type(${row}) > .cell:nth-of-type(${column})`);
+        if (!$cell.is('.blue, .red')) {
+            return $cell;
+        }
     }
-
-    $(`.row:nth-last-of-type(${i}) > .cell:nth-of-type(${numColumn})`).addClass(color);
-
+    return null;
+    */
 }
+
+function colorizeCell($cellToColorize, player) {
+    $cellToColorize.addClass(currentPlayer);
+
+    if (currentPlayer === 'blue') {  
+        currentPlayer = 'red';
+    }
+    else {
+        currentPlayer = 'blue';
+    }
+    
+    updateMessage();
+  }
