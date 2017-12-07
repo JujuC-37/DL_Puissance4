@@ -1,8 +1,8 @@
 const $firstRow = $('.row:first-of-type');
 const $message = $('.message');
-let currentPlayer = 'blue';
 const nbRows = 6;
-const nbColumns = 6;
+const nbColumns = 7;
+let currentPlayer = 'blue';
 
 updateMessage(currentPlayer);
 
@@ -16,18 +16,28 @@ $firstRow.on('click', '.cell', function (event) {
     if($cellToColorize == null) return;
     colorizeCell($cellToColorize, currentPlayer);
 
-    if(verifyEndGame()) {
-        updateMessage(null);
-    }
-    else {
-        updateMessage(currentPlayer);
+    switch(verifyEndGame()) {
+        case 'nobody':  displayEndMessage(null);
+                        break;
+
+        case 'blue':    displayEndMessage('blue');
+                        break;
+
+        case 'red':     displayEndMessage('red');
+                        break;
+
+        default:        updateMessage();
     }
 });
 
 // ---------------------- functions ----------------------
-function updateMessage(player) {
-    if(player != null) {
-        $message.text(`Joueur actuel : ${player}`)
+function updateMessage() {
+    $message.text(`Joueur actuel : ${currentPlayer}`);
+}
+
+function displayEndMessage(winner) {
+    if(winner) {
+        $message.text(`Bravo ! Le joueur ${winner} a gagné !`)
     }
     else {
         $message.text('Partie terminée. Pas de gagnant :(');
@@ -51,16 +61,72 @@ function findEmptyCellInColumn(column) {
 function colorizeCell($cellToColorize, player) {
     $cellToColorize.addClass(currentPlayer);
 
-    if (currentPlayer === 'blue') {  
+    if (currentPlayer === 'blue') {
         currentPlayer = 'red';
     }
     else {
         currentPlayer = 'blue';
     }
 
-    updateMessage();
 }
 
 function verifyEndGame() {
-    return $('.row:first-of-type > .cell:not(.blue):not(.red)').length == 0;
+    // array empty ?
+    const emptyBoard = $('.row:first-of-type > .cell:not(.blue):not(.red)').length == 0;
+    if(emptyBoard) return 'nobody';
+
+    // array not empty
+    const cellsArray = createCellsArray();
+
+    const horizontallyAlignedPawns = findWinnerHorizontally(cellsArray);
+    if (horizontallyAlignedPawns) return horizontallyAlignedPawns;
+
+    const verticallyAlignedPawns = findWinnerVertically(cellsArray);
+    if (verticallyAlignedPawns) return verticallyAlignedPawns;
+
+    return null;
+}
+
+function createCellsArray() {
+    let cellsArray = new Array(nbRows).fill(null);
+
+    for(let row=0; row<nbRows; row++) {
+        cellsArray[row] = new Array(nbColumns).fill(null);
+    
+        const cells = $(`.row:nth-of-type(${row+1}) > .cell`);
+
+        for(let col=0; col<nbColumns; col++) {
+            if($(cells[col]).hasClass('blue')) {
+                cellsArray[row][col] = 'blue';
+            }
+            else if($(cells[col]).hasClass('red')){
+                cellsArray[row][col] = 'red';
+            }
+        }
+    }
+    return cellsArray;
+}
+
+function findWinnerHorizontally(cellsArrays) {
+    for(let row=0; row<cellsArrays.length; row++) {
+        const line = cellsArrays[row].join(' ');
+        console.log(line);
+        if(line.includes('blue blue blue blue')){
+            return 'blue';
+        }
+        else if(line.includes('red red red red')){
+            return 'red';
+        }
+    }
+    return null;
+}
+
+function findWinnerVertically(cellsArrays) {
+    const transposedArray = cellsArrays[0].map((_,c) => {
+                                    return cellsArrays.map(row => {
+                                        return row[c]});
+    });
+    console.log(cellsArrays);
+    console.log(transposedArray);
+    return findWinnerHorizontally(transposedArray);
 }
