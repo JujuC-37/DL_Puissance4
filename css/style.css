@@ -1,0 +1,67 @@
+:root {
+  --columns: 7;
+  --rows: 6;
+  --cell-size: 35px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.game {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.board {
+  border: 1px solid black;
+  width: calc(var(--columns) * var(--cell-size));
+  height: calc(var(--rows) * var(--cell-size));
+  
+  display: -webkit-box;
+  
+  display: -ms-flexbox;
+  
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+
+.cell {
+  border-radius: 50%;
+  border: 1px solid black;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin: 4px;
+}
+
+.cell.red {
+  background-color: red;
+  pointer-events: none;
+}
+.cell.blue {
+  background-color: blue;
+  pointer-events: none;
+}
+
+.row:first-of-type > .cell:hover {
+  background-color: green;
+  cursor: pointer;
+}
+
+.info {
+  padding: 10px;
+}
