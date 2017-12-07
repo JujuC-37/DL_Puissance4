@@ -79,10 +79,13 @@ function verifyEndGame() {
     const cellsArray = createCellsArray();
 
     const horizontallyAlignedPawns = findWinnerHorizontally(cellsArray);
-    if (horizontallyAlignedPawns) return horizontallyAlignedPawns;
+    if(horizontallyAlignedPawns) return horizontallyAlignedPawns;
 
     const verticallyAlignedPawns = findWinnerVertically(cellsArray);
-    if (verticallyAlignedPawns) return verticallyAlignedPawns;
+    if(verticallyAlignedPawns) return verticallyAlignedPawns;
+
+    const diagonallyAlignedPawns = findWinnerDiagonally(cellsArray);
+    if(diagonallyAlignedPawns) return diagonallyAlignedPawns;
 
     return null;
 }
@@ -110,7 +113,7 @@ function createCellsArray() {
 function findWinnerHorizontally(cellsArrays) {
     for(let row=0; row<cellsArrays.length; row++) {
         const line = cellsArrays[row].join(' ');
-        console.log(line);
+        
         if(line.includes('blue blue blue blue')){
             return 'blue';
         }
@@ -126,7 +129,44 @@ function findWinnerVertically(cellsArrays) {
                                     return cellsArrays.map(row => {
                                         return row[c]});
     });
-    console.log(cellsArrays);
-    console.log(transposedArray);
     return findWinnerHorizontally(transposedArray);
+}
+
+function findWinnerDiagonally(cellsArray) {
+    //top-left -> bottom-right
+    for(let row=0; row<cellsArray.length-4; row++){
+        for(let col=0; col<cellsArray[row].length-4; col++) {
+            let line1 = '';
+
+            for (let i=0; i<4; i++){
+                line1 += `${cellsArray[row+i][col+i]} `;
+            }
+            if(line1.includes('blue blue blue blue')){
+                return 'blue';
+            }
+            else if(line1.includes('red red red red')){
+                return 'red';
+            }
+            line1 = '';
+        }
+    }
+
+    //top-right -> bottom-left
+    // for(let row=3; row<cellsArray.length; row++){
+    //     for(let col=3; col<cellsArray[row].length; col++) {
+    //         let line2 = '';
+
+    //         for (let i=0; i<4; i++){
+    //             line2 += `${cellsArray[row-i][col-i]} `;
+    //         }
+    //         if(line2.includes('blue blue blue blue')){
+    //             return 'blue';
+    //         }
+    //         else if(line2.includes('red red red red')){
+    //             return 'red';
+    //         }
+    //         line2 = '';
+    //     }
+    // }
+    return null;
 }
