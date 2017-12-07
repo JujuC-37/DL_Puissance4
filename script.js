@@ -1,8 +1,10 @@
 const $firstRow = $('.row:first-of-type');
 const $message = $('.message');
 let currentPlayer = 'blue';
+const nbRows = 6;
+const nbColumns = 6;
 
-updateMessage();
+updateMessage(currentPlayer);
 
 // ----------------------- events ------------------------
 $firstRow.on('click', '.cell', function (event) {
@@ -13,12 +15,23 @@ $firstRow.on('click', '.cell', function (event) {
 
     if($cellToColorize == null) return;
     colorizeCell($cellToColorize, currentPlayer);
-    updateMessage();
+
+    if(verifyEndGame()) {
+        updateMessage(null);
+    }
+    else {
+        updateMessage(currentPlayer);
+    }
 });
 
 // ---------------------- functions ----------------------
-function updateMessage() {
-  $message.text(`Joueur actuel : ${currentPlayer}`)
+function updateMessage(player) {
+    if(player != null) {
+        $message.text(`Joueur actuel : ${player}`)
+    }
+    else {
+        $message.text('Partie terminée. Pas de gagnant :(');
+    }
 }
 
 function findEmptyCellInColumn(column) {
@@ -44,6 +57,10 @@ function colorizeCell($cellToColorize, player) {
     else {
         currentPlayer = 'blue';
     }
-    
+
     updateMessage();
-  }
+}
+
+function verifyEndGame() {
+    return $('.row:first-of-type > .cell:not(.blue):not(.red)').length == 0;
+}
